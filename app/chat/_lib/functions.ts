@@ -52,7 +52,7 @@ export const like = async (message: any, myId: any) => {
                 authorId: myId
             }
             });
-            if (message.author.id != myId && !liked) {
+            if (message.userId != myId && !liked) {
             await prisma.tb_pbot.create({
                 data: { messageId:message.id, authorId: myId}
             });

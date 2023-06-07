@@ -4,7 +4,7 @@ import React from 'react';
 interface Props {
     show: boolean,
     setShow: (boolean) => void,
-    message: string,
+    message: any,
     removeMessage: (messageId:string) => void
 }
 
