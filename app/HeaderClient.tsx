@@ -79,7 +79,7 @@ const HeaderClient = () => {
         >
           {isMounted && session ? (
             <div>
-              <span>{session.user.name}</span>
+              <span>{session.user?.name}</span>
               <span
                 className="mx-8 font-medium hover:text-gray-400 hover:cursor-pointer"
                 onClick={() => signOut()}

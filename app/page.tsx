@@ -3,6 +3,7 @@ import prisma from "@/client";
 import BonusFilter from "@/components/functions/bonusfilter";
 import CasinoSingleCard from "@/components/CasinoSIngleCard";
 import CasinoCard from "@/components/CasinoCard";
+import Bonus from "@/components/Bonus";
 import { GiTrophy } from "react-icons/gi";
 import { TbBeach } from "react-icons/tb";
 import monthYear from "@/components/functions/monthYear";
@@ -85,8 +86,9 @@ export default async function page() {
       </div>
 
       <h1>LOCATION </h1>
-      <CasinoSingleCard data ={ cardData} />
-      <CasinoCard data = {casinos} />
+      <CasinoSingleCard data ={cardData} />
+      
+      <Bonus data = {casinos} />
       <div className="m-4 md:mx-32 md:mt-28">
         <h4 className="text-2xl font-medium py-2 text-left md:text-5xl md:my-4">
           {"Exclusive online casino bonuses in " + monthYear()}

@@ -11,37 +11,75 @@ const CommentEditModal = lazy(factoryEditModal);
 
 interface props {
     user: any,
-    messages: any,
+    getMessages: () => any,
     like: (message: any) => void,
     updateMessage: (message: any) => Promise<void>,
     removeMessage: (messageId: string) => any,
     sendMessage: (message: any) => any
 }
 
-const MessageList: React.FC<props> = ({user, messages, like, updateMessage, removeMessage, sendMessage}) => {
+interface Message {
+    createdAt: any,
+    message: string,
+    userId: string,
+    like: number,
+    id: string,
+    isLiked: boolean, 
+    username:string,
+    userImage: string,
+    userRole: number,
+    userEmail: string,
+}
+
+const MessageList: React.FC<props> = ({user, getMessages, like, updateMessage, removeMessage, sendMessage}) => {
     const myId = user?.id;
     const [showEditModal, setShowEditModal] = useState(false);
     const [showModalDelete, setShowModalDelete] = useState(false);
     const [message, setMessage] = useState(null);
+    // const [messages, setMessages] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [optimisticMessages, setOptimisticMessages] = useState(messages);
+    const [optimisticMessages, setOptimisticMessages] = useState<any[]>([]);
+    const [initLoading, setInitLoading] = useState(true);
+    useEffect(() => {
+        async function fetchMessages() {
+            try {
+              const initMessages = await getMessages();
+              setOptimisticMessages(initMessages);
+              setInitLoading(false);
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        
+          fetchMessages();
+          const intervalId = setInterval(() => {
+            fetchMessages();
+          }, 5000); // Fetch every 5 seconds
+        
+          // Return a cleanup function to clear the interval when the component unmounts
+          return () => clearInterval(intervalId);
+    }, [])
 
     const likeMessage = async (message) => {
         await like(message);
         
-        let updatedMessages = optimisticMessages.map(mes => {
-            if (mes.id === message['id']){
-                return message;
-            }
-            return mes;
-        })
-        setOptimisticMessages(updatedMessages);
+        modifyOptimisticMessage(message);
     }
 
     const addOptimisticMessage = (message: any) => {
         message = {...message, sending: true};
         let updatedMessages = optimisticMessages;
         updatedMessages.unshift(message);
+        setOptimisticMessages(updatedMessages);
+    }
+
+    const modifyOptimisticMessage = (message: any) => {
+        let updatedMessages = optimisticMessages.map(mes => {
+            if (mes.id === message['id']){
+                return message;
+            }
+            return mes;
+        })
         setOptimisticMessages(updatedMessages);
     }
 
@@ -60,12 +98,12 @@ const MessageList: React.FC<props> = ({user, messages, like, updateMessage, remo
                 }
             })
             setOptimisticMessages(updatedMessages);            
-            messages = updatedMessages;
+            // messages = updatedMessages;
             setLoading(false);
         }
         else {
             console.log('this is sending message else')
-            setOptimisticMessages(messages);
+            // setOptimisticMessages(messages);
             setLoading(false);
             return;
         }
@@ -75,9 +113,6 @@ const MessageList: React.FC<props> = ({user, messages, like, updateMessage, remo
         factoryDeleteModal();
       },[showModalDelete]);
       
-      useEffect(() => {
-        setOptimisticMessages(messages);
-      }, [messages])
     // import MessageEditModal
     useEffect(() => {
         factoryEditModal();
@@ -95,19 +130,20 @@ const MessageList: React.FC<props> = ({user, messages, like, updateMessage, remo
 
     const deleteMessage = (message: any) => {
         setLoading(true);
-
+        let updatedMessages = optimisticMessages.filter(mes => mes.id != message.id);
+        setOptimisticMessages(updatedMessages);            
         const res = removeMessage(message?.id);
-        if (res && res != "") {
-            console.log(res.id);
-            console.log(message.id);
-            let updatedMessages = optimisticMessages.filter(mes => mes.id != message.id);
-            setOptimisticMessages(updatedMessages);            
-            messages = updatedMessages;
-        }
+        console.log(res);
         setLoading(false);
     }
 
-    const renderMessages =  optimisticMessages.length > 0  && optimisticMessages.map((message) => {
+    const editMesssage = (message: any) => {
+        
+        modifyOptimisticMessage(message);
+        
+        updateMessage(message);
+    }
+    const renderMessages =  optimisticMessages && optimisticMessages.length > 0  && optimisticMessages.map((message) => {
         if(message?.sending == true ) {
             return <div key={new Date() + 'sending...'} className="flex items-center justify-between">
             <div>
@@ -193,16 +229,6 @@ const MessageList: React.FC<props> = ({user, messages, like, updateMessage, remo
             </h2>
         </>
     )
-
-    const messageRender =
-    <>
-        {optimisticMessages && optimisticMessages.length > 0 ? renderMessages: renderNullMessages}
-        {message && 
-            <>
-                <CommentEditModal message={message} show={showEditModal} setShow={setShowEditModal} saveMessage={updateMessage}/>
-                <CommentDeleteModal message={message} show={showModalDelete} setShow={setShowModalDelete} removeMessage={deleteMessage}/>
-            </>}
-    </>
     const loadingSkeleton = <>        
         <div role="status" className="max-w-md p-4 space-y-4 border border-gray-200 divide-y divide-gray-200 rounded shadow animate-pulse dark:divide-gray-700 md:p-6 dark:border-gray-700">
             <div className="flex items-center justify-between">
@@ -243,6 +269,19 @@ const MessageList: React.FC<props> = ({user, messages, like, updateMessage, remo
                 <span className="sr-only">Loading...</span>
             </div>
         </>
+    const messageRender =
+    <>
+    {initLoading && 
+        loadingSkeleton
+    }
+        {!initLoading && optimisticMessages && optimisticMessages.length > 0 ? renderMessages: renderNullMessages}
+        {message && 
+            <>
+                <CommentEditModal message={message} show={showEditModal} setShow={setShowEditModal} saveMessage={editMesssage}/>
+                <CommentDeleteModal message={message} show={showModalDelete} setShow={setShowModalDelete} removeMessage={deleteMessage}/>
+            </>}
+    </>
+
     return <div className="md:w-10/12 sm:w-full mx-auto px-4">
 
     {user && user.id && <ShoutBox sendMessage={sendNewMessage} loading={loading} />}

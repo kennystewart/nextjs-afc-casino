@@ -41,7 +41,7 @@ export default async function Nodeposit() {
   const casinos = await getCasinos();
   return (
     <NoDepositContent>
-      <NoDepositCasinoList bonus={casinos} />
+      <NoDepositCasinoList bonus={casinos} />  
     </NoDepositContent>
   );
 }

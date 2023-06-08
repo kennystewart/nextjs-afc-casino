@@ -6,7 +6,7 @@ interface Props {
   message: any;
   show: boolean;
   setShow: (boolean) => void;
-  saveMessage: (message: any) => Promise<void>;
+  saveMessage: (message: any) => void;
 }
 
 const CommentEditModal: React.FC<Props> = ({
