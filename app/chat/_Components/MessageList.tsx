@@ -18,18 +18,6 @@ interface props {
     sendMessage: (message: any) => any
 }
 
-interface Message {
-    createdAt: any,
-    message: string,
-    userId: string,
-    like: number,
-    id: string,
-    isLiked: boolean, 
-    username:string,
-    userImage: string,
-    userRole: number,
-    userEmail: string,
-}
 
 const MessageList: React.FC<props> = ({user, getMessages, like, updateMessage, removeMessage, sendMessage}) => {
     const myId = user?.id;
@@ -224,9 +212,9 @@ const MessageList: React.FC<props> = ({user, getMessages, like, updateMessage, r
 
     const renderNullMessages = (
         <>
-            <h2>
+        {(loading || initLoading) ? (<></>) : (<h2>
                 Sorry, there is no message.
-            </h2>
+            </h2>)}
         </>
     )
     const loadingSkeleton = <>        
@@ -271,9 +259,9 @@ const MessageList: React.FC<props> = ({user, getMessages, like, updateMessage, r
         </>
     const messageRender =
     <>
-    {initLoading && 
-        loadingSkeleton
-    }
+        {initLoading && 
+            loadingSkeleton
+        }
         {!initLoading && optimisticMessages && optimisticMessages.length > 0 ? renderMessages: renderNullMessages}
         {message && 
             <>

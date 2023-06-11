@@ -11,9 +11,9 @@ import MessageList from "./_Components/MessageList";
 export default async function Chat() {
   ""
   const session = await getServerSession(authOptions);
-  ////@ts-expect-error
-  // const userEmail: string = session?.user?.email;
-  const userEmail: string = "lionmarksham@gmail.com";
+  //@ts-expect-error
+  const userEmail: string = session?.user?.email;
+  // const userEmail: string = "lionmarksham@gmail.com";
   ////@ts-expect-error
   // const myId: string = session?.user?.id;
   let user = await prisma.user.findFirst({
@@ -205,7 +205,7 @@ export default async function Chat() {
       ORDER BY
         "ChatMessage"."createdAt" DESC;
           `;
-    return updatedMessages;
+      return updatedMessages;
       }
       catch(error) {
         console.log(error)
@@ -215,41 +215,41 @@ export default async function Chat() {
   
     
   }
-  const messages = await prisma.$queryRaw`
-  SELECT
-  "ChatMessage"."createdAt",
-  "ChatMessage".message,
-  "ChatMessage"."authorId" AS "userId",
-  "ChatMessage"."like",
-  "ChatMessage"."id",
-  (
-      SELECT COUNT(*)
-      FROM tb_pbot
-      WHERE tb_pbot."messageId" = "ChatMessage"."id" AND tb_pbot."authorId" = ${user?.id}
-  ) > 0 AS "isLiked",
-  users."name" AS username,
-  users.image AS "userImage",
-  users."role" AS "userRole",
-  users.email AS "userEmail"
-FROM
-  "ChatMessage"
-  INNER JOIN
-  users
-  ON
-      "ChatMessage"."authorId" = users."id"
-GROUP BY
-  "ChatMessage"."createdAt",
-  "ChatMessage".message,
-  "ChatMessage"."authorId",
-  "ChatMessage"."like",
-  "ChatMessage"."id",
-  users."name",
-  users.email,
-  users.image,
-  users."role"
-ORDER BY
-  "ChatMessage"."createdAt" DESC;
-    `;
+//   const messages = await prisma.$queryRaw`
+//   SELECT
+//   "ChatMessage"."createdAt",
+//   "ChatMessage".message,
+//   "ChatMessage"."authorId" AS "userId",
+//   "ChatMessage"."like",
+//   "ChatMessage"."id",
+//   (
+//       SELECT COUNT(*)
+//       FROM tb_pbot
+//       WHERE tb_pbot."messageId" = "ChatMessage"."id" AND tb_pbot."authorId" = ${user?.id}
+//   ) > 0 AS "isLiked",
+//   users."name" AS username,
+//   users.image AS "userImage",
+//   users."role" AS "userRole",
+//   users.email AS "userEmail"
+// FROM
+//   "ChatMessage"
+//   INNER JOIN
+//   users
+//   ON
+//       "ChatMessage"."authorId" = users."id"
+// GROUP BY
+//   "ChatMessage"."createdAt",
+//   "ChatMessage".message,
+//   "ChatMessage"."authorId",
+//   "ChatMessage"."like",
+//   "ChatMessage"."id",
+//   users."name",
+//   users.email,
+//   users.image,
+//   users."role"
+// ORDER BY
+//   "ChatMessage"."createdAt" DESC;
+//     `;
 
   return (
     <>

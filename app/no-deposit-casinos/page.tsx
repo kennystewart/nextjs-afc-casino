@@ -1,9 +1,8 @@
 import NoDepositContent from "./NoDepositContent";
 import NoDepositCasinoList from "./NoDepositCasinoList";
-import { PrismaClient } from "@prisma/client";
 import BonusFilter from "../../components/functions/bonusfilter";
+import prisma from "@/client";
 
-const prisma = new PrismaClient();
 async function getCasinos() {
   const data = await prisma.casino_p_casinos.findMany({
     where: {
@@ -41,7 +40,7 @@ export default async function Nodeposit() {
   const casinos = await getCasinos();
   return (
     <NoDepositContent>
-      <NoDepositCasinoList bonus={casinos} />  
+      <NoDepositCasinoList bonus={casinos} />
     </NoDepositContent>
   );
 }

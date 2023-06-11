@@ -17,6 +17,7 @@ import {
 import Faq from "@/components/faq";
 import GridGuide from "@/components/GridGuide";
 import Buttonlight from "@/components/Buttonlight";
+import CasinoDisplayList from "@/components/CasinoDisplayList";
 
 async function getCasinos() {
   const data = await prisma.casino_p_casinos.findMany({
@@ -87,6 +88,7 @@ export default async function page() {
 
       <h1>LOCATION </h1>
       <CasinoSingleCard data ={cardData} />
+      <CasinoDisplayList data ={casinos} />
       
       <Bonus data = {casinos} />
       <div className="m-4 md:mx-32 md:mt-28">

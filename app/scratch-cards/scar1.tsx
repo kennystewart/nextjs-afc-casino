@@ -1,3 +1,4 @@
+
 import prisma from "@/client";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { startOfMonth } from "date-fns";
@@ -47,7 +48,7 @@ export async function Scratcher() {
   return (
     <main>
       <form action={play}>
-        <div className="lg:w-11/12 md:w-90 m-5" style={{backgroundImage:'url("/cbg.png")'}}>
+        <div className="lg:w-11/12 md:w-90 m-5" style={{backgroundImage:'url("/bg.png")'}}>
           {/* <div className="w-100">
             <Image
               className="mx-auto"
@@ -71,7 +72,7 @@ export async function Scratcher() {
                 .fill(null)
                 .map((_, idx) => (
 
-                  <div  key={idx} className="bg-white duration-500 rounded-2xl mb-2 md:h-auto mb-2  shadow-lg lg:transform ">
+                  <div  key={idx} className="bg-white duration-500 rounded-2xl mb-2 md:h-auto mb-2  shadow-lg lg:transform  hover:scale-105 -translate-y-6">
 
                     <img
                       className={`lg:w-28 lg:h-28 md:w-24 md:h-24 sm:w-20 sm:h-20 object-cover rounded-xl ${
@@ -102,7 +103,7 @@ export async function Scratcher() {
                   : ""
               }`}
             >
-              <h1 className="font-bold text-md">$25 Cash</h1>
+              <h1 className="text-">$25 Cash</h1>
               <div className="flex">
                 {[1, 2, 3].map((v) => (
                   <Image
@@ -124,7 +125,7 @@ export async function Scratcher() {
                   : ""
               }`}
             >
-              <h1 className="font-bold text-md">25 AFC Rewards</h1>
+              <div>25 AFC Rewards</div>
               <div className="flex">
                 {[1, 2, 3].map((v) => (
                   <Image
@@ -146,7 +147,7 @@ export async function Scratcher() {
                   : ""
               }`}
             >
-              <h1 className="font-bold text-md">15 AFC Rewards</h1>
+              <div>15 AFC Rewards</div>
               <div className="flex">
                 {[1, 2, 3].map((v) => (
                   <Image
@@ -168,7 +169,7 @@ export async function Scratcher() {
                   : ""
               }`}
             >
-              <h1 className="font-bold text-md">10 AFC Rewards</h1>
+              <div>10 AFC Rewards</div>
               <div className="flex">
                 {[1, 2, 3].map((v) => (
                   <Image
