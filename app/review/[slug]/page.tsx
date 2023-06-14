@@ -18,6 +18,7 @@ import { BsArrowRightCircleFill, BsFillStarFill } from "react-icons/bs";
 import { CgMenuLeft } from "react-icons/cg";
 import { FaAngleRight } from "react-icons/fa";
 import { GrClose } from "react-icons/gr";
+import { VscStarEmpty } from "react-icons/vsc";
 
 async function getProps({ params }) {
   const slug = params.slug;
@@ -377,7 +378,7 @@ export default async function Review({ params }) {
               <p id="LikeCasinos" className="my-4">
                 Casinos Like {data.casino}
               </p>
-              <LikeCasinos data={likeCasinoData} />
+            <LikeCasinos data={likeCasinoData} VscStarEmpty={<VscStarEmpty/>} BsFillStarFill={<BsFillStarFill/>} BsArrowRightCircleFill ={<BsArrowRightCircleFill className="mx-4" />} />
             </div>
             <Faq data={faq} />
             <div className="text-lg font-normal">

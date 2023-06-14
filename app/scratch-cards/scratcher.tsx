@@ -6,6 +6,8 @@ import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import { playScratch } from "./play";
 import { activePrizeChipStyle, isReadyForPlay } from "./shared";
+import PayItem from "./_components/PayItem";
+import { last } from "cheerio/lib/api/traversing";
 
 export async function Scratcher() {
   const session = await getServerSession(authOptions);
@@ -43,11 +45,10 @@ export async function Scratcher() {
     },
     orderBy: { user: { createdAt: "desc" } },
   });
-
   return (
     <main>
       <form action={play}>
-        <div className="lg:w-11/12 md:w-90 m-5" style={{backgroundImage:'url("/cbg.png")'}}>
+        <div className="md:w-90 m-2 flex">
           {/* <div className="w-100">
             <Image
               className="mx-auto"
@@ -57,133 +58,60 @@ export async function Scratcher() {
               alt="AFC Scratch Card"
             />
           </div> */}
-          <div className="text-center p-10">
-              <Image
-              className="mx-auto"
-              src="https://www.allfreechips.com/image/i/schead.png"
-              width={400}
-              height={40}
-              alt="AFC Scratch Card"
-            />
+          <div className="flex-1">
+            <div className="text-center w-96 p-0">
+                <Image
+                className="mx-auto"
+                src="https://www.allfreechips.com/image/i/schead.png"
+                width={400}
+                height={40}
+                alt="AFC Scratch Card"
+              />
+            </div>
+            <div className="text-center p-2 w-96" style={{backgroundImage:'url("/scratch_bg.png")'}}>
+              <section className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-3 justify-items-center items-center gap-y-8 gap-x-10 mt-4 mb-4" style={{height:"310px"}}>
+                  {Array(9)
+                    .fill(null)
+                    .map((_, idx) => (
+                        <img key={idx}
+                          className={`object-cover rounded-md 
+                          ${
+                            canPlay && isFreePlay ? "h-20" : "h-16"
+                          }
+                          ${
+                            lastOutcome != null &&
+                            lastOutcome.table[idx] === lastOutcome.prize
+                              ? "bg-slate-300"
+                              : ""
+                            
+                          }`}
+                          src={
+                            canPlay && isFreePlay
+                              ? `data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==`
+                              : lastOutcome != null
+                              ? lastOutcome.table[idx]
+                              : `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7`
+                          }
+                          alt="Icon"
+                        />
+                    ))}
+              </section> 
+              <section className="w-fit mx-auto grid grid-cols-2 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 justify-items-center items-center gap-y-2 gap-x-14 mt-4 mb-4">
+                <PayItem text="$25 Cash" avatar={activePrizeChipStyle.VALUE_25_USD} isFreePlay={isFreePlay} lastOutcome={lastOutcome} />
+                <PayItem text="25 AFC Rewards" avatar={activePrizeChipStyle.VALUE_25_PTS} isFreePlay={isFreePlay} lastOutcome={lastOutcome} />
+                <PayItem text="15 AFC Rewards" avatar={activePrizeChipStyle.VALUE_15_PTS} isFreePlay={isFreePlay} lastOutcome={lastOutcome} />
+                <PayItem text="10 AFC Rewards" avatar={activePrizeChipStyle.VALUE_10_PTS} isFreePlay={isFreePlay} lastOutcome={lastOutcome} />
+              </section>
+            </div>
           </div>
-          <section className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-3 justify-items-center items-center gap-y-20 gap-x-14 mt-10 mb-5">
-              {Array(9)
-                .fill(null)
-                .map((_, idx) => (
-
-                  <div  key={idx} className="bg-white duration-500 rounded-2xl mb-2 md:h-auto mb-2  shadow-lg lg:transform ">
-
-                    <img
-                      className={`lg:w-28 lg:h-28 md:w-24 md:h-24 sm:w-20 sm:h-20 object-cover rounded-xl ${
-                        lastOutcome != null &&
-                        lastOutcome.table[idx] === lastOutcome.prize
-                          ? "bg-slate-300"
-                          : ""
-                      }`}
-                      src={
-                        canPlay && isFreePlay
-                          ? `data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==`
-                          : lastOutcome != null
-                          ? lastOutcome.table[idx]
-                          : `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7`
-                      }
-                      alt="Icon"
-                    />
-                  </div>
-                ))}
-          </section> 
-
-          <section className="w-fit mx-auto grid grid-cols-2 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 justify-items-center items-center gap-y-20 gap-x-14 mt-10 mb-5  ">
-            <div
-              className={`border-spacing-1 p-2 rounded-lg justify-items-center items-center flex flex-col ${
-                !isFreePlay &&
-                lastOutcome?.prize === activePrizeChipStyle.VALUE_25_USD
-                  ? "bg-slate-300"
-                  : ""
-              }`}
-            >
-              <h1 className="font-bold text-md">$25 Cash</h1>
-              <div className="flex">
-                {[1, 2, 3].map((v) => (
-                  <Image
-                    key={`25usd-${v}`}
-                    className="mx-1"
-                    height={40}
-                    width={40}
-                    src={activePrizeChipStyle.VALUE_25_USD}
-                    alt="$25 USD"
-                  />
-                ))}
-              </div>
-            </div>
-            <div
-              className={`border-spacing-1 p-2 rounded-lg justify-items-center items-center flex flex-col ${
-                !isFreePlay &&
-                lastOutcome?.prize === activePrizeChipStyle.VALUE_25_PTS
-                  ? "bg-slate-300"
-                  : ""
-              }`}
-            >
-              <h1 className="font-bold text-md">25 AFC Rewards</h1>
-              <div className="flex">
-                {[1, 2, 3].map((v) => (
-                  <Image
-                    key={`25pts-${v}`}
-                    className="mx-1"
-                    height={40}
-                    width={40}
-                    src={activePrizeChipStyle.VALUE_25_PTS}
-                    alt="25 AFC Rewards"
-                  />
-                ))}
-              </div>
-            </div>
-            <div
-              className={`border-spacing-1 p-2 rounded-lg justify-items-center items-center flex flex-col ${
-                !isFreePlay &&
-                lastOutcome?.prize === activePrizeChipStyle.VALUE_15_PTS
-                  ? "bg-slate-300"
-                  : ""
-              }`}
-            >
-              <h1 className="font-bold text-md">15 AFC Rewards</h1>
-              <div className="flex">
-                {[1, 2, 3].map((v) => (
-                  <Image
-                    key={`15pts-${v}`}
-                    className="mx-1"
-                    height={40}
-                    width={40}
-                    src={activePrizeChipStyle.VALUE_15_PTS}
-                    alt="15 AFC Rewards"
-                  />
-                ))}
-              </div>
-            </div>
-            <div
-              className={`border-spacing-1 p-2 rounded-lg justify-items-center items-center flex flex-col ${
-                !isFreePlay &&
-                lastOutcome?.prize === activePrizeChipStyle.VALUE_10_PTS
-                  ? "bg-slate-300"
-                  : ""
-              }`}
-            >
-              <h1 className="font-bold text-md">10 AFC Rewards</h1>
-              <div className="flex">
-                {[1, 2, 3].map((v) => (
-                  <Image
-                    key={`10pts-${v}`}
-                    className="mx-1"
-                    height={40}
-                    width={40}
-                    src={activePrizeChipStyle.VALUE_10_PTS}
-                    alt="10 AFC Rewards"
-                  />
-                ))}
-              </div>
-            </div>
-          </section>
-          <section className="w-fit mx-auto grid grid-cols-2 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 gap-y-20 gap-x-14 mt-10 mb-5  ">
+          <div className="flex-1">
+            this is the list...
+          </div>
+                    
+        </div>
+        <div className="text-center p-2 w-96">
+         
+          <section className="w-fit mx-auto grid grid-cols-2 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 gap-y-20 gap-x-14 mt-4 mb-4">
             <button
               disabled={!(canPlay && isFreePlay)}
               type="submit"
@@ -199,7 +127,9 @@ export async function Scratcher() {
               Point Play ({points})
             </button>
           </section>
-          <div className="text-center p-10 bg-yellow-500/75" >
+        </div>
+          
+          <div className="text-center p-4" >
               {canPlay ? (
                 isFreePlay ? (
                 <h1 className="font-bold text-3xl">Click Free Play now to claim your prize!</h1>
@@ -213,8 +143,6 @@ export async function Scratcher() {
                   <h1 className="font-bold text-3xl">Free play available again in {humanWhen}.</h1>
                 )}
           </div>
-          
-        </div>
       </form>
     </main>
   );

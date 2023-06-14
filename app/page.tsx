@@ -54,6 +54,7 @@ async function getCasinos() {
 }
 
 export default async function page() {
+  
   const casinos = await getCasinos();
   const cardData = {
     title: "Best US Casino",
@@ -66,7 +67,7 @@ export default async function page() {
   };
   return (
     <div className="md:container mx-auto text-sky-700 dark:text-white">
-      <div className="py-6 px-1 mt-28">
+      <div className="py-6 px-1 mt-4">
         <div className="container mx-auto">
           <div className="flex text-sm gap-1 font-medium  items-center md:gap-4">
             <span>AFC Home</span>

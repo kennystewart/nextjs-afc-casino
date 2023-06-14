@@ -18,7 +18,6 @@ interface props {
     sendMessage: (message: any) => any
 }
 
-
 const MessageList: React.FC<props> = ({user, getMessages, like, updateMessage, removeMessage, sendMessage}) => {
     const myId = user?.id;
     const [showEditModal, setShowEditModal] = useState(false);
@@ -73,7 +72,6 @@ const MessageList: React.FC<props> = ({user, getMessages, like, updateMessage, r
 
     const sendNewMessage = async (event: any) => {
         const message = event.message?.toString() ?? "";
-        setLoading(true);
         addOptimisticMessage(message);
         const result = await sendMessage(message);
         if (result.id) {
@@ -86,13 +84,9 @@ const MessageList: React.FC<props> = ({user, getMessages, like, updateMessage, r
                 }
             })
             setOptimisticMessages(updatedMessages);            
-            // messages = updatedMessages;
-            setLoading(false);
         }
         else {
             console.log('this is sending message else')
-            // setOptimisticMessages(messages);
-            setLoading(false);
             return;
         }
     }
